@@ -1,4 +1,4 @@
-# Medge's Thoughts
+# TODOs for Today
 
-* Add docs/*.md files
-* Profit
+
+
