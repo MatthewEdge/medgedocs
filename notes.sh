@@ -3,12 +3,6 @@ NOTES_DIR=$CODE_DIR/medgedocs/docs
 
 alias opennotes="open http://localhost:8000" # Mkdocs Container
 alias todos="$EDITOR $NOTES_DIR/index.md"
-
-
-if [ ! -d "$NOTES_DIR" ]; then
-  git clone git@github.com:MatthewEdge/medgedocs.git $CODE_DIR/medgedocs
-fi
-
 alias cdnotes="cd $NOTES_DIR"
 
 # CLI for interacting with note files
@@ -17,6 +11,11 @@ alias cdnotes="cd $NOTES_DIR"
 note() {
   DATE=$(date '+%Y-%m-%d')
   NOTE_NAME=${2:-$DATE}
+
+  # Override behavior for `note mkdir`
+  if [ "$1" = "mkdir" ]; then
+    mkdir -p $NOTES_DIR/$2
+  fi
 
   # Add extension if missing
   case "$NOTE_NAME" in
@@ -45,6 +44,7 @@ note() {
     *)
       echo "Usage: note CMD ARGS"
       echo "  new [NAME] - Create a new note, optionally with a given name"
+      echo "  mkdir [NAME] - Create a new directory within the notes base dir"
       echo "  cat [NAME] - cat the contents of the given / current day's note"
       echo "  open [NAME] - open the contents of the given / current day's note in the shell EDITOR"
       echo "  list [NAME] - list notes in the Notes directory"
@@ -63,6 +63,7 @@ _note_completions() {
     1)
       # Complete `note` with subcommands
       COMPREPLY+=("new")
+      COMPREPLY+=("mkdir")
       COMPREPLY+=("cat")
       COMPREPLY+=("open")
       COMPREPLY+=("list")
