@@ -1,7 +1,16 @@
 # Note Taking, hosted by Mkdocs
 NOTES_DIR=$CODE_DIR/medgedocs/docs
 
-alias opennotes="open http://localhost:8000" # Mkdocs Container
+# Start the Mkdocs app and open the UI in a browser
+opennotes() {
+  base=$(pwd)
+  cd $NOTES_DIR
+  cd ../
+  make up
+  cd ${orig}
+  open http://localhost:8000
+}
+
 alias todos="$EDITOR $NOTES_DIR/index.md"
 alias cdnotes="cd $NOTES_DIR"
 
