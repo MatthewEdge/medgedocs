@@ -1,22 +1,24 @@
-# Note Taking, hosted by Mkdocs
-NOTES_DIR=$CODE_DIR/medgedocs/docs
+# Note Taking from the command line, optionally rendered by Mkdocs
+#!/bin/sh
+BASEDIR=$HOME/medgedocs
+NOTES_DIR=$BASEDIR/docs
 
-# Start the Mkdocs app and open the UI in a browser
-opennotes() {
-  base=$(pwd)
-  cd $NOTES_DIR
-  cd ../
-  make up
-  cd ${orig}
-  open http://localhost:8000
+usage() {
+  echo "Usage: note CMD ARGS"
+  echo "  cd - change directory to the notes base dir"
+  echo "  today - Create and open a daily note named with the YYYY-MM-DD.md convention"
+  echo "  new [NAME] - Create a new note with a given name"
+  echo "  mkdir [NAME] - Create a new directory within the notes base dir"
+  echo "  cat [NAME] - cat the contents of the given / current day's note"
+  echo "  open [NAME] - open the contents of the given / current day's note in the shell EDITOR"
+  echo "  ls - list notes in the Notes directory"
+  echo "  del [NAME] - delete the given / current day's note"
+  echo " "
+  echo "Utility functions:"
+  echo "  opennotes - open and render notes with a Mkdocs container"
 }
 
-alias todos="$EDITOR $NOTES_DIR/index.md"
-alias cdnotes="cd $NOTES_DIR"
-
-# CLI for interacting with note files
-# Usage: note CMD [NAME]
-#    if no NAME, it will generate a YYYY-MM-DD.md name
+# CLI entrypoint
 note() {
   DATE=$(date '+%Y-%m-%d')
   NOTE_NAME=${2:-$DATE}
@@ -35,6 +37,12 @@ note() {
   NOTE_PATH=$NOTES_DIR/$NOTE_NAME
 
   case $1 in
+    cd)
+      cd $NOTES_DIR
+      ;;
+    today)
+      $EDITOR $NOTES_DIR/$DATE.md
+      ;;
     new|n)
       $EDITOR $NOTE_PATH
       ;;
@@ -51,13 +59,7 @@ note() {
       rm $NOTE_PATH
       ;;
     *)
-      echo "Usage: note CMD ARGS"
-      echo "  new [NAME] - Create a new note, optionally with a given name"
-      echo "  mkdir [NAME] - Create a new directory within the notes base dir"
-      echo "  cat [NAME] - cat the contents of the given / current day's note"
-      echo "  open [NAME] - open the contents of the given / current day's note in the shell EDITOR"
-      echo "  list [NAME] - list notes in the Notes directory"
-      echo "  del [NAME] - delete the given / current day's note"
+      usage | echo
       ;;
   esac
 }
@@ -71,7 +73,9 @@ _note_completions() {
   case ${COMP_CWORD} in
     1)
       # Complete `note` with subcommands
+      COMPREPLY+=("cd")
       COMPREPLY+=("new")
+      COMPREPLY+=("today")
       COMPREPLY+=("mkdir")
       COMPREPLY+=("cat")
       COMPREPLY+=("open")
@@ -90,3 +94,13 @@ _note_completions() {
 }
 
 complete -F _note_completions note
+
+# Start the Mkdocs app and open the UI in a browser
+opennotes() {
+  base=$(pwd)
+  cd $BASEDIR
+  make up
+  cd ${orig}
+  open http://localhost:8000
+}
+
