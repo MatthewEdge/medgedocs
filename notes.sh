@@ -1,5 +1,5 @@
 # Note Taking, hosted by Mkdocs
-NOTES_DIR=$CODE_DIR/medgedocs/docs
+NOTES_DIR=$HOME/medgedocs/docs
 
 # Start the Mkdocs app and open the UI in a browser
 opennotes() {
@@ -24,6 +24,7 @@ note() {
   # Override behavior for `note mkdir`
   if [ "$1" = "mkdir" ]; then
     mkdir -p $NOTES_DIR/$2
+    exit 0
   fi
 
   # Add extension if missing
@@ -80,7 +81,7 @@ _note_completions() {
       ;;
     2)
       # Complete subcommands with ls of notes directory
-      notes=$(command ls $NOTES_DIR)
+      notes=$(command find $NOTES_DIR | grep .md)
       COMPREPLY=($(compgen -W "${notes}" -- ${cur}))
       ;;
     *)
