@@ -13,6 +13,7 @@ usage() {
   echo "  open [NAME] - open the contents of the given / current day's note in the shell EDITOR"
   echo "  ls - list notes in the Notes directory"
   echo "  del [NAME] - delete the given / current day's note"
+  echo "  graphify [NAME] - Render any mermaidjs segments within the given note. Can be injected into the note as [Render any mermaidjs segments within the given note. Can be injected into the note as [](./NAME.md.svg)"
   echo " "
   echo "Utility functions:"
   echo "  opennotes - open and render notes with a Mkdocs container"
@@ -59,6 +60,9 @@ note() {
     del|d)
       rm $NOTE_PATH
       ;;
+    graphify|g)
+      npx -p @mermaid-js/mermaid-cli mmdc -i $NOTE_PATH -t dark -o $NOTE_PATH.svg
+      ;;
     *)
       usage | echo
       ;;
@@ -82,6 +86,7 @@ _note_completions() {
       COMPREPLY+=("open")
       COMPREPLY+=("list")
       COMPREPLY+=("del")
+      COMPREPLY+=("graphify")
       ;;
     2)
       # Complete subcommands with ls of notes directory
